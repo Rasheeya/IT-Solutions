@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stackly | Sign Up</title>
+  <meta name="description" content="Create a new account to get started.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="custom-select.js" defer></script>
+</head>
+<body>
+
+  <!-- Back to Home Link (Top Left) -->
+  <a href="404.html" class="back-to-home-btn" id="back-to-home">
+    <i data-lucide="home"></i>
+    Back to Home
+  </a>
+
+  <!-- Toast Notifications Container Removed -->
+
+  <!-- Main Auth Page Wrapper -->
+  <div class="auth-wrapper">
+    <div class="auth-card animate-fade-in">
+      <div class="auth-card-header">
+        <img src="./image/logo (4).webp" alt="Stackly" width="40%" height="40%">
+        <p class="auth-card-subtitle">Get started by entering your details below.</p>
+      </div>
+
+      <form id="signup-form" onsubmit="handleSignup(event)">
+        <!-- Full Name Input -->
+        <div class="form-group">
+          <label class="form-label" for="signup-name">Full Name</label>
+          <div class="input-container">
+            <i data-lucide="user" class="input-icon"></i>
+            <input 
+              type="text" 
+              id="signup-name" 
+              class="form-input" 
+              placeholder="e.g., Alex Johnson" 
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Email Input -->
+        <div class="form-group">
+          <label class="form-label" for="signup-email">Email Address</label>
+          <div class="input-container">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input 
+              type="email" 
+              id="signup-email" 
+              class="form-input" 
+              placeholder="e.g., alex@domain.com" 
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <label class="form-label" for="signup-password">Password</label>
+          <div class="input-container">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input 
+              type="password" 
+              id="signup-password" 
+              class="form-input" 
+              placeholder="Min. 6 characters" 
+              minlength="6"
+              required
+            >
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Confirm Password</label>
+          <div class="input-container">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input 
+              type="password" 
+              id="confirm-password" 
+              class="form-input" 
+              placeholder="Min. 6 characters" 
+              minlength="6"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Account Type Dropdown -->
+        <div class="form-group">
+          <label class="form-label" for="signup-type">Account Type</label>
+          <div class="input-container">
+            <i data-lucide="user-check" class="input-icon"></i>
+            <select id="signup-type" class="form-input" required>
+              <option value="" disabled selected>Select Account Type</option>
+              <option value="Admin">Admin</option>
+              <option value="Client">Client</option>
+            </select>
+            <i data-lucide="chevron-down" class="select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary" id="signup-button">
+          Create Account
+          <i data-lucide="user-plus"></i>
+        </button>
+      </form>
+
+      <!-- Auth Footer Options -->
+      <div class="auth-footer">
+        Already have an account? 
+        <a href="index.html" class="auth-link" id="login-link">Login</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Safe localStorage wrappers to prevent security sandbox crashes
+    function safeGetItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function safeRemoveItem(key) {
+      try {
+        localStorage.removeItem(key);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Initialize Lucide Icons safely after DOM loads
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') {
+        try {
+          lucide.createIcons();
+        } catch (e) {
+          console.warn('Lucide icons creation failed:', e);
+        }
+      }
+    });
+
+    // Safety check and repair of localStorage keys to prevent parse crashes
+    const keysToCheck = ['users', 'admin_clients', 'admin_projects', 'admin_employees', 'client_services', 'client_invoices', 'client_tickets'];
+    keysToCheck.forEach(key => {
+      const val = safeGetItem(key);
+      if (val) {
+        try {
+          const parsed = JSON.parse(val);
+          if (!Array.isArray(parsed)) {
+            safeRemoveItem(key);
+          }
+        } catch (e) {
+          safeRemoveItem(key);
+        }
+      }
+    });
+    
+    const sessionVal = safeGetItem('current_user');
+    if (sessionVal) {
+      try {
+        JSON.parse(sessionVal);
+      } catch (e) {
+        safeRemoveItem('current_user');
+      }
+    }
+
+    // Signup Handler
+    function handleSignup(event) {
+      event.preventDefault();
+      window.location.href = '404.html';
+    }
+  </script>
+</body>
+</html>

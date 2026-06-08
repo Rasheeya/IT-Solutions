@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stackly | Login</title>
+  <meta name="description" content="Sign in to access your dashboard.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="custom-select.js" defer></script>
+</head>
+<body>
+
+  <!-- Back to Home Link (Top Left) -->
+  <a href="404.html" class="back-to-home-btn" id="back-to-home">
+    <i data-lucide="home"></i>
+    Back to Home
+  </a>
+
+  <!-- Toast Notifications Container Removed -->
+
+  <!-- Main Auth Page Wrapper -->
+  <div class="auth-wrapper">
+    <div class="auth-card animate-fade-in">
+      <div class="auth-card-header">
+        <img src="./image/logo (4).webp" alt="Stackly" width="40%" height="40%">
+        <p class="auth-card-subtitle">Welcome back! Please enter your details.</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+
+        <!-- Login As Dropdown -->
+        <div class="form-group">
+          <label class="form-label" for="login-as">Login As</label>
+          <div class="input-container">
+            <i data-lucide="user-check" class="input-icon"></i>
+            <select id="login-as" class="form-input" required>
+              <option value="" disabled selected>Select Role</option>
+              <option value="Admin">Admin</option>
+              <option value="Client">Client</option>
+            </select>
+            <i data-lucide="chevron-down" class="select-arrow"></i>
+          </div>
+        </div>
+
+        
+        <!-- Email Input -->
+        <div class="form-group">
+          <label class="form-label" for="login-email">User ID / Email</label>
+          <div class="input-container">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input 
+              type="text" 
+              id="login-email" 
+              class="form-input" 
+              placeholder="e.g., admin@itsolutions.com" 
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <div class="input-container">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input 
+              type="password" 
+              id="login-password" 
+              class="form-input" 
+              placeholder="••••••••" 
+              required
+            >
+          </div>
+        </div>
+
+
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember">
+            Remember me
+          </label>
+          <a href="404.html" class="forgot-password" id="forgot-password-link">Forgot password?</a>
+        </div>
+
+
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary" id="login-button">
+          Log In
+          <i data-lucide="log-in"></i>
+        </button>
+      </form>
+
+      <!-- Auth Footer Options -->
+      <div class="auth-footer">
+        Don't have an account? 
+        <a href="signup.html" class="auth-link" id="create-account-link">Create Account</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global error handler removed
+
+    // Safe localStorage wrappers to prevent security sandbox crashes
+    function safeGetItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function safeRemoveItem(key) {
+      try {
+        localStorage.removeItem(key);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Initialize Lucide Icons safely after DOM loads
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') {
+        try {
+          lucide.createIcons();
+        } catch (e) {
+          console.warn('Lucide icons creation failed:', e);
+        }
+      }
+    });
+
+    // Safety check and repair of localStorage keys to prevent parse crashes
+    const keysToCheck = ['users', 'admin_clients', 'admin_projects', 'admin_employees', 'client_services', 'client_invoices', 'client_tickets'];
+    keysToCheck.forEach(key => {
+      const val = safeGetItem(key);
+      if (val) {
+        try {
+          const parsed = JSON.parse(val);
+          if (!Array.isArray(parsed)) {
+            safeRemoveItem(key);
+          }
+        } catch (e) {
+          safeRemoveItem(key);
+        }
+      }
+    });
+    
+    const sessionVal = safeGetItem('current_user');
+    if (sessionVal) {
+      try {
+        JSON.parse(sessionVal);
+      } catch (e) {
+        safeRemoveItem('current_user');
+      }
+    }
+
+    // Helper: Generate a display name from email address safely
+    function getNameFromEmail(email) {
+      if (!email) return "User";
+      const namePart = email.split('@')[0];
+      if (!namePart) return "User";
+      return namePart
+        .split(/[._\-+]/)
+        .map(word => {
+          if (!word) return "";
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
+    }
+
+    // Default Demo Users for direct testing if localStorage is empty
+    const defaultUsers = [
+      { name: "Alex Admin", email: "admin@itsolutions.com", password: "admin", type: "Admin" },
+      { name: "John Client", email: "client@itsolutions.com", password: "client", type: "Client" }
+    ];
+
+    // Seed database if it does not exist or is not an array
+    let dbUsers = null;
+    try {
+      const val = safeGetItem('users');
+      if (val) {
+        dbUsers = JSON.parse(val);
+      }
+    } catch(e) {}
+    if (!dbUsers || !Array.isArray(dbUsers)) {
+      safeSetItem('users', JSON.stringify(defaultUsers));
+    }
+
+    // Login Handler
+    function handleLogin(event) {
+      event.preventDefault();
+
+      const role = document.getElementById('login-as').value;
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      // Save session with entered details
+      safeSetItem('current_user', JSON.stringify({
+        name: getNameFromEmail(email),
+        email: email,
+        type: role
+      }));
+
+      // Redirect based on selected role
+      if (role === 'Admin') {
+        window.location.href = 'AdminDashboard.html';
+      } else {
+        window.location.href = 'ClientDashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>
