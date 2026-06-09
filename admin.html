@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Stackly</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Floating background bubbles -->
+    <div class="bg-decor">
+        <div class="bg-bubble bg-bubble-1"></div>
+        <div class="bg-bubble bg-bubble-2"></div>
+        <div class="bg-bubble bg-bubble-3"></div>
+    </div>
+
+    <!-- Mobile Header (visible only on small screens) -->
+    <header class="mobile-header">
+        <button class="mobile-menu-btn" id="menuToggle" aria-label="Open Sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 80px;">
+
+    </header>
+
+    <!-- Dashboard Main Workspace -->
+    <div class="dashboard-container">
+        <!-- Drawer Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div>
+                <div class="sidebar-logo">
+                    
+                    <div class="sidebar-logo-text">
+                       <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 80px;">
+                    </div>
+                </div>
+
+                <div class="sidebar-profile">
+                    <div class="sidebar-avatar" id="avatarLetter">A</div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-username" id="adminNameDisplay">Administrator</div>
+                        <div class="sidebar-userrole" id="adminEmailDisplay">admin@stackly.com</div>
+                    </div>
+                </div>
+
+                <nav class="dashboard-nav">
+                    <button class="dashboard-nav-item active" onclick="switchTab('overview')">
+                        <i class="fa-solid fa-chart-pie"></i> <span>Overview</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('clients')">
+                        <i class="fa-solid fa-users"></i> <span>Clients</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('tickets')">
+                        <i class="fa-solid fa-ticket"></i> <span>Tickets</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('billing')">
+                        <i class="fa-solid fa-credit-card"></i> <span>Billing</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('analytics')">
+                        <i class="fa-solid fa-chart-line"></i> <span>Analytics</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('settings')">
+                        <i class="fa-solid fa-sliders"></i> <span>Settings</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="dashboard-nav-item" onclick="handleLogout()" style="color: var(--danger); background-color: rgba(239, 68, 68, 0.05);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Dynamic Main content -->
+        <main class="dashboard-content">
+            
+            <!-- OVERVIEW TAB -->
+            <div id="overview" class="dashboard-tab active">
+                <div class="content-header">
+                    <div>
+                        <h1>System Overview</h1>
+                        <p>Real-time analytics and company metrics tracker</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('clientModal')">
+                        <i class="fa-solid fa-plus"></i> Add Client
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="openModal('clientModal')">
+                        <div class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></div>
+                        <span>New Client</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="switchTab('tickets')">
+                        <div class="quick-action-icon"><i class="fa-solid fa-ticket"></i></div>
+                        <span>View Tickets</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="switchTab('billing')">
+                        <div class="quick-action-icon"><i class="fa-solid fa-receipt"></i></div>
+                        <span>Billing Report</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="switchTab('analytics')">
+                        <div class="quick-action-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <span>Analytics</span>
+                    </button>
+                </div>
+
+                <!-- Stats card deck -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Clients</span>
+                            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <div class="stat-value" id="statClientsCount" data-target="0">0</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-circle-arrow-up"></i> <span>+12 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Active Services</span>
+                            <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
+                        </div>
+                        <div class="stat-value" id="statServices" data-target="7">0</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-circle-arrow-up"></i> <span>+3 operational</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Monthly Revenue</span>
+                            <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+                        </div>
+                        <div class="stat-value" id="statRevenue" data-target="59000" data-prefix="$">0</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-circle-arrow-up"></i> <span>8.2% vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Pending Tickets</span>
+                            <div class="stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        </div>
+                        <div class="stat-value" id="statTickets" data-target="0">0</div>
+                        <div class="stat-change neutral">
+                            <i class="fa-solid fa-circle-info"></i> <span>Awaiting response</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Recent Activity Feed -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Recent Activity</h3>
+                                <p class="card-subtitle">Latest platform events and updates</p>
+                            </div>
+                        </div>
+                        <div class="activity-feed" id="activityFeed">
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fa-solid fa-user-check"></i></div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New client registered</div>
+                                    <div class="activity-time">Sarah Wilson - Tech Corp · 2 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fa-solid fa-ticket"></i></div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Support ticket resolved</div>
+                                    <div class="activity-time">TK-101 - Database Issue · 4 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fa-solid fa-credit-card"></i></div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Payment received</div>
+                                    <div class="activity-time">INV-2026-005 - $2,500 · 1 day ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fa-solid fa-server"></i></div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Service upgraded</div>
+                                    <div class="activity-time">Cloud Hosting - Digital Solutions · 2 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Health Status -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">System Health</h3>
+                        </div>
+                        <div class="status-tracker-container">
+                            <div class="status-bar-item">
+                                <div class="status-bar-info">
+                                    <span class="status-bar-label">CPU Load</span>
+                                    <span class="status-bar-value" id="cpuVal">42%</span>
+                                </div>
+                                <div class="status-bar-track">
+                                    <div class="status-bar-fill" id="cpuBar" style="width: 42%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="status-bar-item">
+                                <div class="status-bar-info">
+                                    <span class="status-bar-label">Storage</span>
+                                    <span class="status-bar-value" id="storageVal">68%</span>
+                                </div>
+                                <div class="status-bar-track">
+                                    <div class="status-bar-fill" id="storageBar" style="width: 68%; background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);"></div>
+                                </div>
+                            </div>
+
+                            <div class="status-bar-item">
+                                <div class="status-bar-info">
+                                    <span class="status-bar-label">API Uptime</span>
+                                    <span class="status-bar-value" style="color: var(--success);">99.94%</span>
+                                </div>
+                                <div class="status-bar-track">
+                                    <div class="status-bar-fill" style="width: 99.9%; background: var(--success);"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 16px; padding: 12px; background: var(--background); border-radius: var(--radius-md); border-left: 3px solid var(--success);">
+                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Status: <span style="color: var(--success);">All Systems Operational</span></div>
+                                <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 4px;">Last check: 2 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Clients Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Recent Registrations</h3>
+                            <p class="card-subtitle">Latest organizations on platform</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="switchTab('clients')">View All</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Company</th>
+                                    <th>Status</th>
+                                    <th>Joined Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentClientsTable">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENTS TAB -->
+            <div id="clients" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Client Management</h1>
+                        <p>Browse and update registered enterprise client nodes</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('clientModal')">
+                        <i class="fa-solid fa-user-plus"></i> Add New Client
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Client Name</th>
+                                    <th>Company</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TICKETS TAB -->
+            <div id="tickets" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Support Tickets</h1>
+                        <p>Review and reply to system issues submitted by clients</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Client Name</th>
+                                    <th>Subject</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BILLING TAB -->
+            <div id="billing" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Billing Ledgers</h1>
+                        <p>Review transaction logs, payments, and invoices status</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary btn-sm" onclick="exportBillingData()">
+                            <i class="fa-solid fa-file-csv"></i> Export CSV
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="printBillingReport()">
+                            <i class="fa-solid fa-print"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card" style="margin-bottom: 0;">
+                        <h4 style="color: var(--text-light); text-transform: uppercase; font-size: 0.8rem; margin-bottom: 8px;">Billing Summary</h4>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: var(--primary);">$125,000</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 4px;">Monthly Recurring Revenue (MRR)</div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0;">
+                        <h4 style="color: var(--text-light); text-transform: uppercase; font-size: 0.8rem; margin-bottom: 8px;">Invoices Status</h4>
+                        <div style="display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.88rem;">
+                            <span>Paid Invoices</span>
+                            <span style="font-weight: 700; color: var(--success);" id="billPaidCount">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.88rem;">
+                            <span>Pending Invoices</span>
+                            <span style="font-weight: 700; color: var(--warning);" id="billPendingCount">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.88rem;">
+                            <span>Overdue Invoices</span>
+                            <span style="font-weight: 700; color: var(--danger);" id="billOverdueCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="printArea">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Invoices</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice ID</th>
+                                    <th>Client Company</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS TAB -->
+            <div id="analytics" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>System Analytics</h1>
+                        <p>Telemetry graphs for client expansion, services, and earnings</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Monthly Revenue Stream</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueLineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Onboarded Client Growth</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="growthBarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card" style="grid-column: span 1;">
+                        <div class="card-header">
+                            <h3 class="card-title">Services Popularity Share</h3>
+                        </div>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="shareDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="settings" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>System Settings</h1>
+                        <p>Configure support emails, timezones, and system alerts triggers</p>
+                    </div>
+                </div>
+
+                <div class="card" style="max-width: 680px;">
+                    <form onsubmit="saveSystemSettings(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="brandName">Portal Brand Name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-heading input-icon-left"></i>
+                                <input type="text" id="brandName" class="form-control" value="IT Solutions" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="supportMail">Admin Alert Receiver Email</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon-left"></i>
+                                <input type="email" id="supportMail" class="form-control" value="ops@itsolutions.com" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label" for="timeZone">Default Timezone</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-earth-americas input-icon-left"></i>
+                                    <input type="text" id="timeZone" class="form-control" value="GMT+5:30" required style="padding-left: 44px;">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="maxCpuThreshold">Alert CPU Threshold</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-gauge input-icon-left"></i>
+                                    <input type="text" id="maxCpuThreshold" class="form-control" value="85%" required style="padding-left: 44px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailAlerts" checked>
+                                <span>Dispatch automated email on infrastructure anomalies</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 12px;">
+                            <i class="fa-solid fa-floppy-disk"></i> <span>Save System Configurations</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Client Account</h2>
+                <button class="modal-close-btn" onclick="closeModal('clientModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="addClientForm" onsubmit="submitAddClient(event)">
+                <div class="form-group">
+                    <label class="form-label" for="clientName">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user input-icon-left"></i>
+                        <input type="text" id="clientName" class="form-control" placeholder="Enter representative name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientCompany">Company Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-building input-icon-left"></i>
+                        <input type="text" id="clientCompany" class="form-control" placeholder="Enter company name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientEmail">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope input-icon-left"></i>
+                        <input type="email" id="clientEmail" class="form-control" placeholder="email@company.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientPhone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-phone input-icon-left"></i>
+                        <input type="tel" id="clientPhone" class="form-control" placeholder="+1 (555) 000-0000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clientService">Core Assigned Service</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-gears input-icon-left"></i>
+                        <input type="text" id="clientService" class="form-control" placeholder="e.g. Cloud Hosting" required style="padding-left: 44px;">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('clientModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Client Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Support Ticket Details Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTicketId">Ticket Details</h2>
+                <button class="modal-close-btn" onclick="closeModal('ticketModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <div style="margin-bottom: 16px;">
+                    <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); font-weight: 600;">Subject</span>
+                    <h3 id="modalTicketSubject" style="margin-top: 4px; font-size: 1.15rem;">-</h3>
+                </div>
+                <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); font-weight: 600;">Sender</span>
+                        <div id="modalTicketClient" style="font-weight: 600; margin-top: 4px;">-</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); font-weight: 600;">Priority</span>
+                        <div style="margin-top: 4px;"><span id="modalTicketPriority" class="priority-badge priority-low">Low</span></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); font-weight: 600;">Description</span>
+                    <p id="modalTicketDesc" style="margin-top: 6px; font-size: 0.9rem; line-height: 1.5; color: var(--text); background: var(--background); padding: 12px; border-radius: 6px;">-</p>
+                </div>
+                <div id="replyArea" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <div class="form-group">
+                        <label class="form-label" for="ticketReplyText">Internal Agent Note / Resolve Reply</label>
+                        <textarea id="ticketReplyText" class="form-control" style="padding: 12px; min-height: 80px;" placeholder="Add details before closing..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ticketModal')">Close View</button>
+                    <button type="button" class="btn btn-primary" id="btnModalResolve">
+                        <i class="fa-solid fa-check-double"></i> Resolve Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script>
+        // Check session role on launch
+        let currentAdminSession = null;
+        window.addEventListener('load', function() {
+            currentAdminSession = checkSession('admin');
+            if (currentAdminSession) {
+                document.getElementById('adminEmailDisplay').textContent = currentAdminSession.email;
+                
+                const name = sessionStorage.getItem('userName') || 'Administrator';
+                document.getElementById('adminNameDisplay').textContent = name;
+                document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+
+                // Trigger dynamic content loadings
+                loadClientsList();
+                loadTicketsList();
+                loadInvoicesList();
+                updateOverviewStats();
+                
+                // Initialize telemetry meters
+                initMeters();
+
+                // Load Chart.js animations
+                initCharts();
+            }
+        });
+
+        // Telemetry values random fluctuation just to show dynamic responsive animation!
+        function initMeters() {
+            setInterval(() => {
+                if (document.hidden) return;
+                
+                // CPU load between 30% and 55%
+                const cpu = Math.floor(Math.random() * 25) + 30;
+                const cpuVal = document.getElementById('cpuVal');
+                const cpuBar = document.getElementById('cpuBar');
+                if (cpuVal && cpuBar) {
+                    cpuVal.textContent = cpu + '%';
+                    cpuBar.style.width = cpu + '%';
+                }
+
+                // Storage load slowly increments
+                const storageVal = document.getElementById('storageVal');
+                const storageBar = document.getElementById('storageBar');
+                if (storageVal && storageBar) {
+                    let storage = parseInt(storageVal.textContent);
+                    if (storage >= 95) storage = 60;
+                    else if (Math.random() > 0.7) storage += 1;
+                    storageVal.textContent = storage + '%';
+                    storageBar.style.width = storage + '%';
+                }
+            }, 5000);
+        }
+
+        // Load dashboard overview statistics
+        function updateOverviewStats() {
+            const clients = getClients();
+            const tickets = getTickets();
+            const invoices = getInvoices();
+
+            // Client counts
+            const totalClients = clients.length;
+            const clientsCounter = document.getElementById('statClientsCount');
+            clientsCounter.setAttribute('data-target', totalClients);
+
+            // Active services calculation
+            let serviceCount = 0;
+            clients.forEach(c => serviceCount += c.services.length);
+            const servicesCounter = document.getElementById('statServices');
+            servicesCounter.setAttribute('data-target', serviceCount);
+
+            // Revenue calculation
+            let totalRevenue = 0;
+            invoices.forEach(i => {
+                if (i.status === 'Paid') totalRevenue += i.amount;
+            });
+            const revCounter = document.getElementById('statRevenue');
+            revCounter.setAttribute('data-target', totalRevenue);
+
+            // Support tickets outstanding
+            const pendingTickets = tickets.filter(t => t.status !== 'Resolved').length;
+            const ticketsCounter = document.getElementById('statTickets');
+            ticketsCounter.setAttribute('data-target', pendingTickets);
+
+            // Run counter animations
+            initAnimatedCounters();
+        }
+
+        // Dynamic clients table rendering
+        function loadClientsList() {
+            const clients = getClients();
+            const tableBody = document.getElementById('clientsTableBody');
+            const recentTableBody = document.getElementById('recentClientsTable');
+            
+            // Populate management table
+            tableBody.innerHTML = '';
+            clients.forEach(c => {
+                const statusClass = c.status === 'Active' ? 'status-active' : 'status-pending';
+                tableBody.innerHTML += `
+                    <tr class="animate-row">
+                        <td style="font-weight: 600;">${c.name}</td>
+                        <td>${c.company}</td>
+                        <td style="color: var(--primary); font-weight: 500;">${c.email}</td>
+                        <td>${c.phone}</td>
+                        <td><span class="status-badge ${statusClass}">${c.status}</span></td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="viewClientDetails('${c.email}')">
+                                <i class="fa-solid fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Populate recent table
+            recentTableBody.innerHTML = '';
+            // Get last 3 elements
+            const recent = clients.slice(-3).reverse();
+            recent.forEach(c => {
+                const statusClass = c.status === 'Active' ? 'status-active' : 'status-pending';
+                recentTableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 600;">${c.name}</td>
+                        <td>${c.company}</td>
+                        <td><span class="status-badge ${statusClass}">${c.status}</span></td>
+                        <td style="font-size: 0.85rem; color: var(--text-light);">${formatDate(c.joined)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // View individual client popup
+        function viewClientDetails(email) {
+            const clients = getClients();
+            const c = clients.find(item => item.email === email);
+            if (c) {
+                alert(`Client Details:\n\nName: ${c.name}\nCompany: ${c.company}\nEmail: ${c.email}\nPhone: ${c.phone}\nJoined: ${c.joined}\nActive Services: ${c.services.join(', ')}\nTotal Account Spendings: ${formatCurrency(c.spent)}`);
+            }
+        }
+
+        // Dynamic support tickets rendering
+        function loadTicketsList() {
+            const tickets = getTickets();
+            const tableBody = document.getElementById('ticketsTableBody');
+            tableBody.innerHTML = '';
+
+            tickets.forEach(t => {
+                const statusClass = t.status === 'Resolved' ? 'status-resolved' : 'status-pending';
+                const priorityClass = t.priority === 'High' ? 'priority-high' : (t.priority === 'Medium' ? 'priority-medium' : 'priority-low');
+                tableBody.innerHTML += `
+                    <tr class="animate-row">
+                        <td style="font-weight: 700; color: var(--primary);">${t.id}</td>
+                        <td style="font-weight: 600;">${t.clientName}</td>
+                        <td>${t.subject}</td>
+                        <td><span class="priority-badge ${priorityClass}">${t.priority}</span></td>
+                        <td><span class="status-badge ${statusClass}">${t.status}</span></td>
+                        <td>${formatDate(t.created)}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="showTicketDetailModal('${t.id}')">
+                                <i class="fa-solid fa-reply"></i> Reply
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Ticket resolution handler inside details modal
+        let activeTicketId = null;
+        function showTicketDetailModal(id) {
+            const tickets = getTickets();
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            activeTicketId = id;
+            document.getElementById('modalTicketId').textContent = `Ticket Details: ${ticket.id}`;
+            document.getElementById('modalTicketSubject').textContent = ticket.subject;
+            document.getElementById('modalTicketClient').textContent = `${ticket.clientName} (${ticket.clientEmail})`;
+            
+            const priorityBadge = document.getElementById('modalTicketPriority');
+            priorityBadge.textContent = ticket.priority;
+            priorityBadge.className = `priority-badge ` + (ticket.priority === 'High' ? 'priority-high' : (ticket.priority === 'Medium' ? 'priority-medium' : 'priority-low'));
+            
+            document.getElementById('modalTicketDesc').textContent = ticket.description;
+            document.getElementById('ticketReplyText').value = '';
+
+            const resolveBtn = document.getElementById('btnModalResolve');
+            if (ticket.status === 'Resolved') {
+                resolveBtn.disabled = true;
+                resolveBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Already Resolved';
+            } else {
+                resolveBtn.disabled = false;
+                resolveBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> Resolve Ticket';
+                resolveBtn.onclick = () => handleResolveTicket(id);
+            }
+
+            openModal('ticketModal');
+        }
+
+        function handleResolveTicket(id) {
+            const tickets = getTickets();
+            const index = tickets.findIndex(t => t.id === id);
+            if (index === -1) return;
+
+            tickets[index].status = 'Resolved';
+            saveTickets(tickets);
+
+            showToast(`Ticket ${id} resolved successfully!`, "success");
+            closeModal('ticketModal');
+            loadTicketsList();
+            updateOverviewStats();
+        }
+
+        // Invoices rendering
+        function loadInvoicesList() {
+            const invoices = getInvoices();
+            const tableBody = document.getElementById('invoicesTableBody');
+            tableBody.innerHTML = '';
+
+            let paidCount = 0;
+            let pendingCount = 0;
+            let overdueCount = 0;
+
+            invoices.forEach(inv => {
+                if (inv.status === 'Paid') paidCount++;
+                else if (inv.status === 'Pending') pendingCount++;
+                else if (inv.status === 'Overdue') overdueCount++;
+
+                const statusClass = inv.status === 'Paid' ? 'status-paid' : (inv.status === 'Pending' ? 'status-pending' : 'status-overdue');
+                tableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--primary);">${inv.id}</td>
+                        <td style="font-weight: 600;">${inv.clientName}</td>
+                        <td style="font-weight: 700;">${formatCurrency(inv.amount)}</td>
+                        <td>${formatDate(inv.date)}</td>
+                        <td><span class="status-badge ${statusClass}">${inv.status}</span></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('billPaidCount').textContent = paidCount;
+            document.getElementById('billPendingCount').textContent = pendingCount;
+            document.getElementById('billOverdueCount').textContent = overdueCount;
+        }
+
+        // Add Client Submission
+        function submitAddClient(event) {
+            event.preventDefault();
+            const name = document.getElementById('clientName').value.trim();
+            const company = document.getElementById('clientCompany').value.trim();
+            const email = document.getElementById('clientEmail').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+            const service = document.getElementById('clientService').value.trim();
+
+            const clients = getClients();
+            const newId = clients.length > 0 ? Math.max(...clients.map(c => c.id)) + 1 : 1;
+
+            const newClient = {
+                id: newId,
+                name: name,
+                company: company,
+                email: email,
+                phone: phone,
+                services: [service],
+                status: "Active",
+                joined: new Date().toISOString().split('T')[0],
+                spent: 0
+            };
+
+            clients.push(newClient);
+            saveClients(clients);
+
+            showToast(`Added client ${company} successfully!`, "success");
+            closeModal('clientModal');
+            document.getElementById('addClientForm').reset();
+            
+            // Reload and recount
+            loadClientsList();
+            updateOverviewStats();
+        }
+
+        // Settings saving
+        function saveSystemSettings(event) {
+            event.preventDefault();
+            const brand = document.getElementById('brandName').value.trim();
+            showToast(`Brand Settings saved as "${brand}"!`, "success");
+        }
+
+        // Print Report Helper
+        function printBillingReport() {
+            printContent('printArea');
+        }
+
+        // Export CSV Helper
+        function exportBillingData() {
+            const invoices = getInvoices();
+            exportToCSV(invoices, 'billing_report_it_solutions.csv');
+            showToast("Transaction report downloaded!", "success");
+        }
+
+        // Initialize Telemetry Analytics Charts (Chart.js)
+        let chartInstances = {};
+        function initCharts() {
+            const ctxLine = document.getElementById('revenueLineChart').getContext('2d');
+            const ctxBar = document.getElementById('growthBarChart').getContext('2d');
+            const ctxDoughnut = document.getElementById('shareDoughnutChart').getContext('2d');
+
+            const isDark = document.body.classList.contains('dark-mode');
+            const gridColor = isDark ? '#1E293B' : '#E2E8F0';
+            const labelColor = isDark ? '#94A3B8' : '#64748B';
+
+            // Clean up previous charts if any
+            Object.values(chartInstances).forEach(c => c.destroy());
+
+            // 1. Line Chart: Earnings growth
+            chartInstances.revenue = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'MRR Growth ($)',
+                        data: [75000, 89000, 94000, 108000, 115000, 125000],
+                        borderColor: '#14B8A6',
+                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#2DD4BF',
+                        pointBorderColor: '#0F172A',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: labelColor }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: { color: labelColor }
+                        }
+                    }
+                }
+            });
+
+            // 2. Bar Chart: Onboarding clients
+            chartInstances.growth = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Organizations',
+                        data: [42, 68, 89, 115, 134, 156],
+                        backgroundColor: 'linear-gradient(to bottom, #14B8A6, #2DD4BF)',
+                        backgroundColor: '#2DD4BF',
+                        hoverBackgroundColor: '#14B8A6',
+                        borderRadius: 6,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: labelColor }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: { color: labelColor }
+                        }
+                    }
+                }
+            });
+
+            // 3. Pie Chart: Distribution popularity
+            chartInstances.share = new Chart(ctxDoughnut, {
+                type: 'pie',
+                data: {
+                    labels: ['Cloud Hosting', 'Security Suite', 'Analytics', 'APIs & Support'],
+                    datasets: [{
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#14B8A6', '#2DD4BF', '#06B6D4', '#0F172A'],
+                        borderWidth: isDark ? 2 : 1,
+                        borderColor: isDark ? '#0F172A' : '#FFFFFF',
+                        hoverOffset: 12,
+                        hoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: labelColor,
+                                font: { size: 12, weight: '600' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Redraw charts on theme change to update colors
+        document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(initCharts, 400); // Wait for transition
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,77 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stackly | 404 Page</title>
-  <meta name="description" content="The page you are looking for does not exist or has been moved.">
-  <link rel="stylesheet" href="styles.css">
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Stackly</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .error-page-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            font-family: 'Outfit', sans-serif;
+            text-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+        }
+        .error-message {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+        .error-description {
+            color: var(--text-light);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .error-card {
+            text-align: center;
+            padding: 60px 40px;
+            max-width: 500px;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="error-wrapper animate-fade-in">
-    <!-- Inline SVG Animated Vector Illustration instead of image file -->
-    <div class="animate-float" style="margin-bottom: 24px;">
-      <svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Background decorative grid -->
-        <rect width="240" height="180" rx="16" fill="white" stroke="rgba(15, 23, 42, 0.08)" stroke-width="2"/>
-        <line x1="20" y1="30" x2="220" y2="30" stroke="rgba(15, 23, 42, 0.08)" stroke-width="2"/>
-        <line x1="20" y1="60" x2="220" y2="60" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        <line x1="20" y1="90" x2="220" y2="90" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        <line x1="20" y1="120" x2="220" y2="120" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        <line x1="20" y1="150" x2="220" y2="150" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        
-        <line x1="60" y1="20" x2="60" y2="160" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        <line x1="120" y1="20" x2="120" y2="160" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        <line x1="180" y1="20" x2="180" y2="160" stroke="rgba(15, 23, 42, 0.04)" stroke-width="1"/>
-        
-        <!-- Browser Window outline -->
-        <rect x="40" y="45" width="160" height="100" rx="8" fill="white" stroke="#14B8A6" stroke-width="3" style="filter: drop-shadow(0 10px 20px rgba(15, 23, 42, 0.08));"/>
-        <!-- Window buttons -->
-        <circle cx="56" cy="57" r="4" fill="#ef4444"/>
-        <circle cx="68" cy="57" r="4" fill="#f59e0b"/>
-        <circle cx="80" cy="57" r="4" fill="#10b981"/>
-        <!-- Broken connection plug -->
-        <path d="M100 105C100 105 105 110 115 110C125 110 130 100 140 100" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
-        <rect x="84" y="99" width="16" height="12" rx="2" fill="#14B8A6"/>
-        <line x1="80" y1="102" x2="84" y2="102" stroke="#14B8A6" stroke-width="2" stroke-linecap="round"/>
-        <line x1="80" y1="108" x2="84" y2="108" stroke="#14B8A6" stroke-width="2" stroke-linecap="round"/>
-
-        <rect x="140" y="94" width="16" height="12" rx="2" fill="#2DD4BF"/>
-        <line x1="156" y1="97" x2="162" y2="97" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round"/>
-        <line x1="156" y1="103" x2="162" y2="103" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Question mark floaters -->
-        <path d="M120 70C123.5 70 126 72 126 75C126 77.5 124 79 122.5 80C121 81 121 82.5 121 84M121 88H121.01" stroke="#14B8A6" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
+    <!-- Background animations -->
+    <div class="bg-decor">
+        <div class="bg-bubble bg-bubble-1"></div>
+        <div class="bg-bubble bg-bubble-2"></div>
+        <div class="bg-bubble bg-bubble-3"></div>
     </div>
 
-    <h1 class="error-code gradient-text">404</h1>
-    <h2 class="error-title">Page Not Found</h2>
-    <p class="error-text">
-      The page you are looking for might have been removed, had its name changed, or is temporarily unavailable. Let's get you back on track.
-    </p>
-    
-    <button class="btn-secondary" onclick="goBack()" id="back-button">
-      <i data-lucide="arrow-left"></i>
-      Go Back
-    </button>
-  </div>
+    <!-- Theme Switcher floating button -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
 
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
+    <div class="error-page-container">
+        <div class="auth-card error-card">
+            <div class="brand-icon" style="margin: 0 auto 24px auto; width: 48px; height: 48px; font-size: 1.2rem;">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div class="error-code">404</div>
+            <h2 class="error-message">Page Not Found</h2>
+            <p class="error-description">Oops! The page you are looking for doesn't exist or has been moved. Let's get you back to safety.</p>
+            <a href="index.html" class="btn btn-primary" style="display: inline-flex; width: auto; padding: 12px 32px;">
+                <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i> Return to Login
+            </a>
+        </div>
+    </div>
 
-    // Responsive navigation helper
-    function goBack() {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = 'index.html';
-      }
-    }
-  </script>
+    <!-- Core Scripts -->
+    <script src="script.js"></script>
 </body>
 </html>

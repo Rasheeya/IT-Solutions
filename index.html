@@ -1,228 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stackly | Login</title>
-  <meta name="description" content="Sign in to access your dashboard.">
-  <link rel="stylesheet" href="styles.css">
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="custom-select.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Stackly</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-  <!-- Back to Home Link (Top Left) -->
-  <a href="404.html" class="back-to-home-btn" id="back-to-home">
-    <i data-lucide="home"></i>
-    Back to Home
-  </a>
-
-  <!-- Toast Notifications Container Removed -->
-
-  <!-- Main Auth Page Wrapper -->
-  <div class="auth-wrapper">
-    <div class="auth-card animate-fade-in">
-      <div class="auth-card-header">
-        <img src="./image/logo (4).webp" alt="Stackly" width="40%" height="40%">
-        <p class="auth-card-subtitle">Welcome back! Please enter your details.</p>
-      </div>
-
-      <form id="login-form" onsubmit="handleLogin(event)">
-
-        <!-- Login As Dropdown -->
-        <div class="form-group">
-          <label class="form-label" for="login-as">Login As</label>
-          <div class="input-container">
-            <i data-lucide="user-check" class="input-icon"></i>
-            <select id="login-as" class="form-input" required>
-              <option value="" disabled selected>Select Role</option>
-              <option value="Admin">Admin</option>
-              <option value="Client">Client</option>
-            </select>
-            <i data-lucide="chevron-down" class="select-arrow"></i>
-          </div>
-        </div>
-
-        
-        <!-- Email Input -->
-        <div class="form-group">
-          <label class="form-label" for="login-email">User ID / Email</label>
-          <div class="input-container">
-            <i data-lucide="mail" class="input-icon"></i>
-            <input 
-              type="text" 
-              id="login-email" 
-              class="form-input" 
-              placeholder="e.g., admin@itsolutions.com" 
-              required
-            >
-          </div>
-        </div>
-
-        <!-- Password Input -->
-        <div class="form-group">
-          <label class="form-label" for="login-password">Password</label>
-          <div class="input-container">
-            <i data-lucide="lock" class="input-icon"></i>
-            <input 
-              type="password" 
-              id="login-password" 
-              class="form-input" 
-              placeholder="••••••••" 
-              required
-            >
-          </div>
-        </div>
-
-
-
-        <!-- Remember Me & Forgot Password -->
-        <div class="form-options">
-          <label class="remember-me">
-            <input type="checkbox" id="remember">
-            Remember me
-          </label>
-          <a href="404.html" class="forgot-password" id="forgot-password-link">Forgot password?</a>
-        </div>
-
-
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn-primary" id="login-button">
-          Log In
-          <i data-lucide="log-in"></i>
-        </button>
-      </form>
-
-      <!-- Auth Footer Options -->
-      <div class="auth-footer">
-        Don't have an account? 
-        <a href="signup.html" class="auth-link" id="create-account-link">Create Account</a>
-      </div>
+    <!-- Background animations -->
+    <div class="bg-decor">
+        <div class="bg-bubble bg-bubble-1"></div>
+        <div class="bg-bubble bg-bubble-2"></div>
+        <div class="bg-bubble bg-bubble-3"></div>
     </div>
-  </div>
 
-  <script>
-    // Global error handler removed
+    <!-- Theme Switcher floating button -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
 
-    // Safe localStorage wrappers to prevent security sandbox crashes
-    function safeGetItem(key) {
-      try {
-        return localStorage.getItem(key);
-      } catch (e) {
-        return null;
-      }
-    }
+    <div class="auth-container">
+        <!-- Left Side: Interactive Branding -->
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <div class="auth-badge">Enterprise Suite</div>
+                <h1>Empower Your IT Operations</h1>
+                <p>A unified portal for real-time systems monitoring, rapid support tickets routing, and secure cloud resource provisioning.</p>
+                
+                <div class="auth-features">
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="auth-feature-text">
+                            <h4>Zero-Trust Security</h4>
+                            <p>End-to-end data encryption and strict session monitoring protocols.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div class="auth-feature-text">
+                            <h4>Advanced Analytics</h4>
+                            <p>Real-time telemetry, service delivery counters, and monthly billing ledgers.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <div class="auth-feature-text">
+                            <h4>24/7 Dedicated Support</h4>
+                            <p>Instant ticket dispatching system communicating directly with IT specialists.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    function safeSetItem(key, value) {
-      try {
-        localStorage.setItem(key, value);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
+        <!-- Right Side: Login Form -->
+        <div class="auth-right">
+            <div class="auth-card">
+                <div class="auth-card-header">
+                
+                    <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 8px;">
+                    <p class="subtitle">Please enter your credentials to login</p>
+                </div>
 
-    function safeRemoveItem(key) {
-      try {
-        localStorage.removeItem(key);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
+                <div id="loginAlert"></div>
 
-    // Initialize Lucide Icons safely after DOM loads
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof lucide !== 'undefined') {
-        try {
-          lucide.createIcons();
-        } catch (e) {
-          console.warn('Lucide icons creation failed:', e);
+                <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+
+                    <!-- Demo Autofill shortcuts -->
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border); text-align: center;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; display: block; margin-bottom: 12px;">Demo Login Shortcuts</span>
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" id="adminDemoBtn" class="btn btn-secondary btn-sm" onclick="autofill('admin@itsolutions.com', 'admin123', 'admin')" style="font-size: 0.75rem; padding: 6px 12px;">Admin Demo</button>
+                        <button type="button" id="clientDemoBtn" class="btn btn-secondary btn-sm" onclick="autofill('client@techcorp.com', 'client123', 'client')" style="font-size: 0.75rem; padding: 6px 12px;">Client Demo</button>
+                    </div>
+                </div>
+
+                    <!-- Email field -->
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon-left"></i>
+                            <input type="email" id="email" class="form-control" placeholder="name@company.com" required>
+                        </div>
+                        <div class="form-error" id="emailError"></div>
+                    </div>
+
+                    <!-- Password field -->
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label class="form-label" for="password" style="margin: 0;">Password</label>
+                            <a href="404.html" class="forgot-password-link">Forgot password?</a>
+                        </div>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon-left"></i>
+                            <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                            <button type="button" class="input-icon-right" id="passwordToggle" onclick="togglePasswordVisibility()" aria-label="Toggle Password Visibility">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-error" id="passwordError"></div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions-row">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember">
+                            <span>Remember this device</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary auth-submit-btn">
+                        <span>Log In</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                </form>
+
+                
+
+                <div class="toggle-link">
+                    New to Stackly? <a href="signup.html">Create an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="script.js"></script>
+    <script>
+        let selectedDemoRole = null; // Track selected role from shortcut click
+
+        // Autofill helper for reviewers
+        function autofill(email, password, role) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            // Clear errors
+            document.getElementById('emailError').innerHTML = '';
+            document.getElementById('passwordError').innerHTML = '';
+            
+            selectedDemoRole = role;
+            updateShortcutStyles();
+            
+            showToast(`Selected ${role === 'admin' ? 'Admin' : 'Client'} mode and autofilled!`, "info");
         }
-      }
-    });
 
-    // Safety check and repair of localStorage keys to prevent parse crashes
-    const keysToCheck = ['users', 'admin_clients', 'admin_projects', 'admin_employees', 'client_services', 'client_invoices', 'client_tickets'];
-    keysToCheck.forEach(key => {
-      const val = safeGetItem(key);
-      if (val) {
-        try {
-          const parsed = JSON.parse(val);
-          if (!Array.isArray(parsed)) {
-            safeRemoveItem(key);
-          }
-        } catch (e) {
-          safeRemoveItem(key);
+        // Toggle active button style
+        function updateShortcutStyles() {
+            const adminBtn = document.getElementById('adminDemoBtn');
+            const clientBtn = document.getElementById('clientDemoBtn');
+            
+            if (selectedDemoRole === 'admin') {
+                adminBtn.classList.remove('btn-secondary');
+                adminBtn.classList.add('btn-primary');
+                clientBtn.classList.remove('btn-primary');
+                clientBtn.classList.add('btn-secondary');
+            } else if (selectedDemoRole === 'client') {
+                clientBtn.classList.remove('btn-secondary');
+                clientBtn.classList.add('btn-primary');
+                adminBtn.classList.remove('btn-primary');
+                adminBtn.classList.add('btn-secondary');
+            } else {
+                adminBtn.classList.remove('btn-primary');
+                adminBtn.classList.add('btn-secondary');
+                clientBtn.classList.remove('btn-primary');
+                clientBtn.classList.add('btn-secondary');
+            }
         }
-      }
-    });
-    
-    const sessionVal = safeGetItem('current_user');
-    if (sessionVal) {
-      try {
-        JSON.parse(sessionVal);
-      } catch (e) {
-        safeRemoveItem('current_user');
-      }
-    }
 
-    // Helper: Generate a display name from email address safely
-    function getNameFromEmail(email) {
-      if (!email) return "User";
-      const namePart = email.split('@')[0];
-      if (!namePart) return "User";
-      return namePart
-        .split(/[._\-+]/)
-        .map(word => {
-          if (!word) return "";
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(' ');
-    }
+        // Add input event listener to sync styling when typing
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailInput = document.getElementById('email');
+            if (emailInput) {
+                emailInput.addEventListener('input', (e) => {
+                    const emailValue = e.target.value.toLowerCase();
+                    if (emailValue.includes('admin')) {
+                        selectedDemoRole = 'admin';
+                    } else if (emailValue.includes('client')) {
+                        selectedDemoRole = 'client';
+                    }
+                    updateShortcutStyles();
+                });
+            }
+        });
 
-    // Default Demo Users for direct testing if localStorage is empty
-    const defaultUsers = [
-      { name: "Alex Admin", email: "admin@itsolutions.com", password: "admin", type: "Admin" },
-      { name: "John Client", email: "client@itsolutions.com", password: "client", type: "Client" }
-    ];
+        // Toggle password visibility eye icon
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('#passwordToggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fa-regular fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fa-regular fa-eye';
+            }
+        }
 
-    // Seed database if it does not exist or is not an array
-    let dbUsers = null;
-    try {
-      const val = safeGetItem('users');
-      if (val) {
-        dbUsers = JSON.parse(val);
-      }
-    } catch(e) {}
-    if (!dbUsers || !Array.isArray(dbUsers)) {
-      safeSetItem('users', JSON.stringify(defaultUsers));
-    }
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
 
-    // Login Handler
-    function handleLogin(event) {
-      event.preventDefault();
+            // Clear errors
+            emailError.innerHTML = '';
+            passwordError.innerHTML = '';
 
-      const role = document.getElementById('login-as').value;
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
+            let hasErrors = false;
 
-      // Save session with entered details
-      safeSetItem('current_user', JSON.stringify({
-        name: getNameFromEmail(email),
-        email: email,
-        type: role
-      }));
+            if (!email) {
+                emailError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Email address is required';
+                hasErrors = true;
+            } else if (!isValidEmail(email)) {
+                emailError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Please enter a valid email address';
+                hasErrors = true;
+            }
 
-      // Redirect based on selected role
-      if (role === 'Admin') {
-        window.location.href = 'AdminDashboard.html';
-      } else {
-        window.location.href = 'ClientDashboard.html';
-      }
-    }
-  </script>
+            if (!password) {
+                passwordError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Password is required';
+                hasErrors = true;
+            } else if (password.length < 6) {
+                passwordError.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Password must be at least 6 characters';
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                showToast("Please fix the validation errors", "danger");
+                return;
+            }
+
+            // Authentication checks: prioritize the active selected Demo Shortcut role,
+            // fall back to looking for "admin" in email, otherwise default to client.
+            const role = selectedDemoRole || (email.toLowerCase().includes('admin') ? 'admin' : 'client');
+            
+            // Set User profile details in session
+            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem('userRole', role);
+            
+            // Generate full name based on prefix
+            const username = email.split('@')[0];
+            const formattedName = username.charAt(0).toUpperCase() + username.slice(1).replace('.', ' ');
+            sessionStorage.setItem('userName', formattedName);
+            
+            showToast("Login successful! Redirecting...", "success");
+            
+            // Transition and redirect
+            setTimeout(() => {
+                window.location.href = role === 'admin' ? 'admin.html' : 'client.html';
+            }, 1200);
+        }
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard - Stackly</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Floating background bubbles -->
+    <div class="bg-decor">
+        <div class="bg-bubble bg-bubble-1"></div>
+        <div class="bg-bubble bg-bubble-2"></div>
+        <div class="bg-bubble bg-bubble-3"></div>
+    </div>
+
+    <!-- Mobile Header (visible only on small screens) -->
+    <header class="mobile-header">
+        <button class="mobile-menu-btn" id="menuToggle" aria-label="Open Sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+       <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 5px;">
+        <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </header>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation Drawer -->
+        <aside class="dashboard-sidebar">
+            <div>
+                <div class="sidebar-logo">
+                    
+                    <div class="sidebar-logo-text">
+                       <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 80px;">
+                    </div>
+                </div>
+
+                <div class="sidebar-profile">
+                    <div class="sidebar-avatar" id="clientAvatarLetter">C</div>
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-username" id="clientNameDisplay">Client Representative</div>
+                        <div class="sidebar-userrole" id="clientEmailDisplay">client@company.com</div>
+                    </div>
+                </div>
+
+                <nav class="dashboard-nav">
+                    <button class="dashboard-nav-item active" onclick="switchTab('overview')">
+                        <i class="fa-solid fa-chart-pie"></i> <span>Overview</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('services')">
+                        <i class="fa-solid fa-screwdriver-wrench"></i> <span>Available Services</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('tickets')">
+                        <i class="fa-solid fa-ticket"></i> <span>Support Tickets</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('invoices')">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> <span>Invoices</span>
+                    </button>
+                    <button class="dashboard-nav-item" onclick="switchTab('profile')">
+                        <i class="fa-solid fa-user-gear"></i> <span>Profile Settings</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="dashboard-nav-item" onclick="handleLogout()" style="color: var(--danger); background-color: rgba(239, 68, 68, 0.05);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Dynamic Workspace Content -->
+        <main class="dashboard-content">
+            
+            <!-- OVERVIEW TAB -->
+            <div id="overview" class="dashboard-tab active">
+
+                <!-- Hero Welcome Banner -->
+                <div class="client-hero">
+                    <div class="client-hero-content">
+                        <div class="client-hero-text">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                                <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Live Portal</span>
+                                <span class="hero-badge hero-badge-success"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> All Systems Operational</span>
+                            </div>
+                            <h1 id="welcomeBackMessage">Welcome back, Representative</h1>
+                            <p class="hero-subtitle">Your infrastructure is running smoothly. Here's a snapshot of your account.</p>
+                        </div>
+                        <div class="client-hero-actions">
+                            <button class="btn btn-primary" onclick="openModal('ticketModal')">
+                                <i class="fa-solid fa-plus"></i> New Support Ticket
+                            </button>
+                            <button class="btn btn-secondary" onclick="switchTab('services')">
+                                <i class="fa-solid fa-rocket"></i> Browse Services
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Active Packages</span>
+                            <div class="stat-icon" style="background-color: rgba(79, 70, 229, 0.1); color: #4F46E5;"><i class="fa-solid fa-cubes"></i></div>
+                        </div>
+                        <div class="stat-value" id="statClientServices" data-target="0">0</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-circle-check"></i> <span>Uptime operational</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Support Requests</span>
+                            <div class="stat-icon" style="background-color: rgba(6, 182, 212, 0.1); color: #06B6D4;"><i class="fa-solid fa-ticket"></i></div>
+                        </div>
+                        <div class="stat-value" id="statClientTickets" data-target="0">0</div>
+                        <div class="stat-change neutral">
+                            <i class="fa-solid fa-circle-info"></i> <span id="pendingTicketsText">0 unresolved issues</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Pending Invoices</span>
+                            <div class="stat-icon" style="background-color: rgba(245, 158, 11, 0.1); color: #F59E0B;"><i class="fa-solid fa-receipt"></i></div>
+                        </div>
+                        <div class="stat-value" id="statClientInvoices" data-target="0" data-prefix="$">0</div>
+                        <div class="stat-change negative" id="overdueBadge">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <span>Check payment status</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Infrastructure Spent</span>
+                            <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: #10B981;"><i class="fa-solid fa-coins"></i></div>
+                        </div>
+                        <div class="stat-value" id="statClientSpent" data-target="0" data-prefix="$">0</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-circle-arrow-up"></i> <span>All-time contract value</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two-Column: Pie Chart + Quick Actions -->
+                <div class="overview-split">
+                    <!-- Pie Chart -->
+                    <div class="card overview-split-main" style="align-self: start;">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Service Allocation Breakdown</h3>
+                                <p class="card-subtitle">Monthly expense distribution by infrastructure component</p>
+                            </div>
+                        </div>
+                        <div style="height: 300px; padding: 16px 8px; display: flex; justify-content: center; align-items: center;">
+                            <canvas id="clientPieChart"></canvas>
+                        </div>
+                        <!-- Service Breakdown Details List to fill empty space -->
+                        <div id="chartServicesBreakdown" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--border); padding-top: 20px;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Panel -->
+                    <div class="overview-split-side">
+                        <div class="card" style="margin-bottom: 16px;">
+                            <h3 class="card-title" style="margin-bottom:16px; font-size:1rem;">Quick Actions</h3>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" onclick="openModal('ticketModal')">
+                                    <div class="quick-action-icon" style="background:rgba(79,70,229,0.1); color:#4F46E5;"><i class="fa-solid fa-headset"></i></div>
+                                    <span>Get Support</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchTab('invoices')">
+                                    <div class="quick-action-icon" style="background:rgba(245,158,11,0.1); color:#F59E0B;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                                    <span>View Invoices</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchTab('services')">
+                                    <div class="quick-action-icon" style="background:rgba(16,185,129,0.1); color:#10B981;"><i class="fa-solid fa-cart-plus"></i></div>
+                                    <span>Order Service</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="switchTab('profile')">
+                                    <div class="quick-action-icon" style="background:rgba(6,182,212,0.1); color:#06B6D4;"><i class="fa-solid fa-user-gear"></i></div>
+                                    <span>Edit Profile</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- System Health -->
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:16px; font-size:1rem;">System Health</h3>
+                            <div class="health-items">
+                                <div class="health-row">
+                                    <div class="health-label"><i class="fa-solid fa-server" style="color:#4F46E5; width:18px;"></i> Cloud Servers</div>
+                                    <span class="health-status health-ok"><i class="fa-solid fa-circle"></i> Online</span>
+                                </div>
+                                <div class="health-row">
+                                    <div class="health-label"><i class="fa-solid fa-database" style="color:#06B6D4; width:18px;"></i> Databases</div>
+                                    <span class="health-status health-ok"><i class="fa-solid fa-circle"></i> Online</span>
+                                </div>
+                                <div class="health-row">
+                                    <div class="health-label"><i class="fa-solid fa-shield-halved" style="color:#10B981; width:18px;"></i> Firewall</div>
+                                    <span class="health-status health-ok"><i class="fa-solid fa-circle"></i> Active</span>
+                                </div>
+                                <div class="health-row">
+                                    <div class="health-label"><i class="fa-solid fa-gauge-high" style="color:#F59E0B; width:18px;"></i> API Latency</div>
+                                    <span class="health-status health-ok"><i class="fa-solid fa-circle"></i> 12ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tickets + Recent Invoices side by side -->
+                <div class="overview-split">
+                    <div class="card overview-split-main">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Recent Support Tickets</h3>
+                                <p class="card-subtitle">Your latest helpdesk requests</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="switchTab('tickets')">View All</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Subject</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="overviewRecentTickets">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card overview-split-side" style="flex: 0.8;">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Recent Invoices</h3>
+                                <p class="card-subtitle">Latest billing statements</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="switchTab('invoices')">View All</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="overviewRecentInvoices">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deployed Services (full width) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Deployed Infrastructure Services</h3>
+                            <p class="card-subtitle">Telemetry monitoring for your operational nodes</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="switchTab('services')">Request More</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Operational System</th>
+                                    <th>Uptime telemetry</th>
+                                    <th>Billing Status</th>
+                                    <th>Infrastructure Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientServicesTable">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SERVICES CATALOGUE TAB -->
+            <div id="services" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Available Stackly</h1>
+                        <p>Provision and scale your cloud systems instantly</p>
+                    </div>
+                </div>
+
+                <div class="services-catalog">
+                    <!-- Service 1 -->
+                    <div class="service-card">
+                        <div class="service-card-header">
+                            <div class="service-card-icon"><i class="fa-solid fa-cloud"></i></div>
+                            <div class="service-title">
+                                <h3>Cloud Hosting</h3>
+                                <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600;">HIGH-SPEED AWS NODES</p>
+                            </div>
+                        </div>
+                        <p class="service-desc">Provision secure servers running on ultra-fast SSD configs. Automatic daily security logs backups and scale-on-demand architectures.</p>
+                        <div class="service-footer">
+                            <div class="service-price">$500 <span>/ month</span></div>
+                            <button class="btn btn-primary btn-sm" onclick="requestService('Cloud Hosting', 500)">
+                                <i class="fa-solid fa-cart-plus"></i> Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="service-card">
+                        <div class="service-card-header">
+                            <div class="service-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="service-title">
+                                <h3>Security Solutions</h3>
+                                <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600;">ZERO-TRUST FIREWALLS</p>
+                            </div>
+                        </div>
+                        <p class="service-desc">End-to-end cloud protection. Intrusion alert telemetry, continuous penetration audits, and managed corporate credential protection.</p>
+                        <div class="service-footer">
+                            <div class="service-price">$300 <span>/ month</span></div>
+                            <button class="btn btn-primary btn-sm" onclick="requestService('Security Solutions', 300)">
+                                <i class="fa-solid fa-cart-plus"></i> Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="service-card">
+                        <div class="service-card-icon" style="position: absolute; top:20px; right:20px; width:36px; height:36px; font-size:1rem; opacity:0.8;"><i class="fa-solid fa-fire"></i></div>
+                        <div class="service-card-header">
+                            <div class="service-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                            <div class="service-title">
+                                <h3>Analytics Suite</h3>
+                                <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600;">REALTIME TELEMETRY</p>
+                            </div>
+                        </div>
+                        <p class="service-desc">Track memory consumption, user queries rates, traffic flow, and monthly server usage indices via live customized Grafana dashboard ports.</p>
+                        <div class="service-footer">
+                            <div class="service-price">$200 <span>/ month</span></div>
+                            <button class="btn btn-primary btn-sm" onclick="requestService('Analytics Suite', 200)">
+                                <i class="fa-solid fa-cart-plus"></i> Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Service 4 -->
+                    <div class="service-card">
+                        <div class="service-card-header">
+                            <div class="service-card-icon"><i class="fa-solid fa-headset"></i></div>
+                            <div class="service-title">
+                                <h3>Support Package</h3>
+                                <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600;">24/7 PRIORITY TELEPHONE</p>
+                            </div>
+                        </div>
+                        <p class="service-desc">Guaranteed sub-30 minute SLAs. Direct access phone line, chat integration pipelines, and dedicated system administrators ready to deploy.</p>
+                        <div class="service-footer">
+                            <div class="service-price">$400 <span>/ month</span></div>
+                            <button class="btn btn-primary btn-sm" onclick="requestService('Support Package', 400)">
+                                <i class="fa-solid fa-cart-plus"></i> Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TICKET MANAGER TAB -->
+            <div id="tickets" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Helpdesk & Support Tickets</h1>
+                        <p>Submit and review system support tickets with our cloud experts</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('ticketModal')">
+                        <i class="fa-solid fa-ticket"></i> Submit Support Ticket
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Subject</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientTicketsTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVOICES TAB -->
+            <div id="invoices" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Transaction Invoices</h1>
+                        <p>Review invoice files, transaction logs, and billing statements</p>
+                    </div>
+                </div>
+
+                <div class="card" id="invoicePrintArea">
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Amount</th>
+                                    <th>Billed Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientInvoicesTableBody">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE SETTINGS TAB -->
+            <div id="profile" class="dashboard-tab">
+                <div class="content-header">
+                    <div>
+                        <h1>Profile Settings</h1>
+                        <p>Edit representative name, contact details, and organization branding</p>
+                    </div>
+                </div>
+
+                <div class="card" style="max-width: 680px;">
+                    <form onsubmit="submitProfileUpdate(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="profileName">Representative Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon-left"></i>
+                                <input type="text" id="profileName" class="form-control" placeholder="Enter representative name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="profileEmail">Registered Email</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon-left"></i>
+                                <input type="email" id="profileEmail" class="form-control" readonly style="opacity:0.75; cursor:not-allowed;">
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-light); margin-top:4px; display:block;">Email address cannot be changed. Contact admin for account migration.</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label" for="profileCompany">Company Name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-regular fa-building input-icon-left"></i>
+                                    <input type="text" id="profileCompany" class="form-control" placeholder="Enter company name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="profilePhone">Phone Number</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon-left"></i>
+                                    <input type="tel" id="profilePhone" class="form-control" placeholder="Phone number" required style="padding-left: 44px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 12px;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span>Save Profile Updates</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Submit Ticket Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Support Ticket</h2>
+                <button class="modal-close-btn" onclick="closeModal('ticketModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="createTicketForm" onsubmit="submitCreateTicket(event)">
+                <div class="form-group">
+                    <label class="form-label" for="ticketSubject">Subject</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-heading input-icon-left"></i>
+                        <input type="text" id="ticketSubject" class="form-control" placeholder="Brief summary of the issue" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="ticketCategory">Category</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-gears input-icon-left"></i>
+                            <select id="ticketCategory" class="form-control" required style="padding-left: 44px; height: 50px;">
+                                <option>Technical Support</option>
+                                <option>Billing</option>
+                                <option>Account Settings</option>
+                                <option>Feature Request</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="ticketPriority">Priority</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-triangle-exclamation input-icon-left"></i>
+                            <select id="ticketPriority" class="form-control" required style="padding-left: 44px; height: 50px;">
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                                <option>Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="ticketDescription">Problem Description</label>
+                    <textarea id="ticketDescription" class="form-control" style="padding: 12px; min-height: 120px;" placeholder="Please outline diagnostic warnings, console logs, or steps to reproduce..." required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ticketModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Dispatch Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="script.js"></script>
+    <script>
+        let currentClientSession = null;
+        let currentClientData = null;
+
+        // Initialize user database session on page load
+        window.addEventListener('load', function() {
+            currentClientSession = checkSession('client');
+            if (currentClientSession) {
+                document.getElementById('clientEmailDisplay').textContent = currentClientSession.email;
+                
+                // Fetch full client details from localStorage clients DB
+                syncClientData();
+
+                // Load metrics and lists
+                loadClientDashboard();
+
+                // Redraw chart on theme change to update colors
+                document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        setTimeout(() => {
+                            loadClientDashboard();
+                        }, 400); // Wait for theme transition to finish
+                    });
+                });
+            }
+        });
+
+        // Sync local storage client state with UI variables
+        function syncClientData() {
+            const clients = getClients();
+            const email = currentClientSession.email;
+            
+            // Find client matching user email
+            let client = clients.find(c => c.email.toLowerCase() === email.toLowerCase());
+            
+            if (!client) {
+                // Generate a mock profile dynamically if they registered with custom details
+                const companyName = sessionStorage.getItem('userCompany') || 'Enterprise Co';
+                const repName = sessionStorage.getItem('userName') || 'Client Rep';
+                
+                client = {
+                    id: Date.now(),
+                    name: repName,
+                    company: companyName,
+                    email: email,
+                    phone: "+1 (555) 019-9000",
+                    services: ["Support Package"],
+                    status: "Active",
+                    joined: new Date().toISOString().split('T')[0],
+                    spent: 400
+                };
+                
+                clients.push(client);
+                saveClients(clients);
+            }
+
+            currentClientData = client;
+
+            // Render details
+            document.getElementById('clientNameDisplay').textContent = client.name;
+            document.getElementById('clientAvatarLetter').textContent = client.name.charAt(0).toUpperCase();
+            document.getElementById('welcomeBackMessage').textContent = `Welcome back, ${client.name} | ${client.company}`;
+            
+            // Fill Profile Form Fields
+            document.getElementById('profileName').value = client.name;
+            document.getElementById('profileEmail').value = client.email;
+            document.getElementById('profileCompany').value = client.company;
+            document.getElementById('profilePhone').value = client.phone;
+        }
+
+        // Render client dashboard metrics
+        function loadClientDashboard() {
+            const client = currentClientData;
+            const tickets = getTickets().filter(t => t.clientEmail.toLowerCase() === client.email.toLowerCase());
+            const invoices = getInvoices().filter(inv => inv.clientName.toLowerCase() === client.company.toLowerCase());
+
+            // 1. Stats Counter updates
+            const serviceCount = client.services.length;
+            document.getElementById('statClientServices').setAttribute('data-target', serviceCount);
+
+            // unresolved tickets
+            const pendingTickets = tickets.filter(t => t.status !== 'Resolved').length;
+            document.getElementById('statClientTickets').setAttribute('data-target', pendingTickets);
+            document.getElementById('pendingTicketsText').textContent = `${pendingTickets} unresolved issues`;
+
+            // pending invoices sum
+            let pendingSum = 0;
+            invoices.forEach(inv => {
+                if (inv.status === 'Pending' || inv.status === 'Overdue') {
+                    pendingSum += inv.amount;
+                }
+            });
+            document.getElementById('statClientInvoices').setAttribute('data-target', pendingSum);
+            
+            const overdueBadge = document.getElementById('overdueBadge');
+            const overdueInvoices = invoices.filter(inv => inv.status === 'Overdue');
+            if (overdueInvoices.length > 0) {
+                overdueBadge.className = "stat-change negative";
+                overdueBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>Overdue payments alert</span>`;
+            } else {
+                overdueBadge.className = "stat-change neutral";
+                overdueBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Account standing clear</span>`;
+            }
+
+            // Total spent contract
+            document.getElementById('statClientSpent').setAttribute('data-target', client.spent);
+
+            // Run increment counter animations
+            initAnimatedCounters();
+
+            // 2. Render Deployed Services table
+            const servicesTable = document.getElementById('clientServicesTable');
+            servicesTable.innerHTML = '';
+            
+            if (client.services.length === 0) {
+                servicesTable.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">No active cloud services. Browse the catalog to order node modules.</td></tr>';
+            } else {
+                client.services.forEach(serv => {
+                    servicesTable.innerHTML += `
+                        <tr>
+                            <td style="font-weight:600;"><i class="fa-solid fa-server" style="color:var(--primary); margin-right:8px;"></i> ${serv}</td>
+                            <td><span style="color:var(--success); font-weight:600;"><i class="fa-solid fa-signal"></i> Operational</span></td>
+                            <td><span class="status-badge status-paid">Active Billed</span></td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="alert('Viewing parameters for ${serv}. Telemetry connection stable.')">
+                                    <i class="fa-solid fa-terminal"></i> Console
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // 3. Render Support Tickets table
+            const ticketsTableBody = document.getElementById('clientTicketsTableBody');
+            ticketsTableBody.innerHTML = '';
+
+            if (tickets.length === 0) {
+                ticketsTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-light);">No tickets submitted. Use the button above to request help.</td></tr>';
+            } else {
+                // Reverse to show newest first
+                tickets.slice().reverse().forEach(t => {
+                    const statusClass = t.status === 'Resolved' ? 'status-resolved' : 'status-pending';
+                    const priorityClass = t.priority === 'High' ? 'priority-high' : (t.priority === 'Medium' ? 'priority-medium' : 'priority-low');
+                    ticketsTableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight:700; color:var(--primary);">${t.id}</td>
+                            <td style="font-weight:600;">${t.subject}</td>
+                            <td><span class="priority-badge ${priorityClass}">${t.priority}</span></td>
+                            <td><span class="status-badge ${statusClass}">${t.status}</span></td>
+                            <td>${formatDate(t.created)}</td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="viewTicketMessage('${t.id}')">
+                                    <i class="fa-solid fa-envelope-open-text"></i> Open Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // 4. Render Invoices Table
+            const invoicesTableBody = document.getElementById('clientInvoicesTableBody');
+            invoicesTableBody.innerHTML = '';
+
+            if (invoices.length === 0) {
+                invoicesTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-light);">No invoice logs found for ${client.company}.</td></tr>';
+            } else {
+                invoices.slice().reverse().forEach(inv => {
+                    const statusClass = inv.status === 'Paid' ? 'status-paid' : (inv.status === 'Pending' ? 'status-pending' : 'status-overdue');
+                    invoicesTableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight:700; color:var(--primary);">${inv.id}</td>
+                            <td style="font-weight:700;">${formatCurrency(inv.amount)}</td>
+                            <td>${formatDate(inv.date)}</td>
+                            <td><span class="status-badge ${statusClass}">${inv.status}</span></td>
+                            <td>
+                                <button class="btn btn-outline btn-sm" onclick="printInvoice('${inv.id}')">
+                                    <i class="fa-solid fa-print"></i> Print
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // 5. Render Pie Chart
+            const serviceCosts = {
+                'Cloud Hosting': 500,
+                'Security Solutions': 300,
+                'Analytics Suite': 200,
+                'Support Package': 400,
+                'Database Management': 150,
+                'API Integration': 100,
+                'Database Management Suite': 150,
+                'Security Solutions Pack': 300,
+                'Cloud Hosting - Production': 500
+            };
+            const labels = [];
+            const data = [];
+            let totalActiveCost = 0;
+            
+            client.services.forEach(serv => {
+                const cost = serviceCosts[serv] || 0;
+                if (cost > 0) {
+                    labels.push(serv);
+                    data.push(cost);
+                    totalActiveCost += cost;
+                }
+            });
+            
+            if (data.length === 0) {
+                labels.push('No Active Services');
+                data.push(1);
+            }
+
+            const ctx = document.getElementById('clientPieChart');
+            if (ctx) {
+                if (window.clientChartInstance) {
+                    window.clientChartInstance.destroy();
+                }
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                const textColor = isDark ? '#f8fafc' : '#1e293b';
+                const ctxCanvas = ctx.getContext('2d');
+                
+                // Helper to create linear gradients dynamically
+                function createGrad(c1, c2) {
+                    const g = ctxCanvas.createLinearGradient(0, 0, 0, 200);
+                    g.addColorStop(0, c1);
+                    g.addColorStop(1, c2);
+                    return g;
+                }
+
+                const gradientsMap = {
+                    'Cloud Hosting': createGrad('#4F46E5', '#818CF8'),
+                    'Security Solutions': createGrad('#06B6D4', '#67E8F9'),
+                    'Analytics Suite': createGrad('#10B981', '#34D399'),
+                    'Support Package': createGrad('#F59E0B', '#FBBF24'),
+                    'Database Management': createGrad('#EC4899', '#F472B6'),
+                    'API Integration': createGrad('#8B5CF6', '#A78BFA')
+                };
+
+                const defaultGrad = createGrad('#64748B', '#94A3B8');
+                const chartGradients = labels.map(label => gradientsMap[label] || defaultGrad);
+                
+                window.clientChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: chartGradients,
+                            borderWidth: isDark ? 2 : 1,
+                            borderColor: isDark ? '#0f172a' : '#ffffff',
+                            spacing: 4,
+                            borderRadius: 6,
+                            cutout: '72%',
+                            hoverOffset: 15,
+                            hoverBorderWidth: 2,
+                            hoverBorderColor: isDark ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.label === 'No Active Services') return 'No data';
+                                        return ' ' + context.label + ': $' + context.raw + ' / mo';
+                                    }
+                                },
+                                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                                titleColor: isDark ? '#fff' : '#0f172a',
+                                bodyColor: isDark ? '#cbd5e1' : '#475569',
+                                borderColor: isDark ? '#334155' : '#e2e8f0',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                cornerRadius: 8,
+                                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                shadowBlur: 10
+                            }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true,
+                            duration: 1400,
+                            easing: 'easeOutQuart'
+                        }
+                    },
+                    plugins: [{
+                        id: 'centerText',
+                        afterDraw: function(chart) {
+                            const chartArea = chart.chartArea;
+                            const centerX = (chartArea.left + chartArea.right) / 2;
+                            const centerY = (chartArea.top + chartArea.bottom) / 2;
+                            const ctx = chart.ctx;
+                            
+                            ctx.restore();
+                            
+                            // Draw "MONTHLY COST" label
+                            ctx.font = "600 0.75rem 'Inter', sans-serif";
+                            ctx.textBaseline = "middle";
+                            ctx.textAlign = "center";
+                            ctx.fillStyle = isDark ? '#94A3B8' : '#64748B';
+                            ctx.fillText("MONTHLY COST", centerX, centerY - 10);
+                            
+                            // Draw dollar amount
+                            ctx.font = "800 1.6rem 'Outfit', sans-serif";
+                            ctx.fillStyle = isDark ? '#F8FAFC' : '#0F172A';
+                            ctx.fillText(`$${totalActiveCost}`, centerX, centerY + 12);
+                            
+                            ctx.save();
+                        }
+                    }]
+                });
+
+                // 6. Render Service breakdown details list below chart to fill empty space
+                const breakdownList = document.getElementById('chartServicesBreakdown');
+                if (breakdownList) {
+                    if (client.services.length === 0) {
+                        breakdownList.innerHTML = `
+                            <div style="text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 12px;">
+                                <i class="fa-solid fa-circle-info"></i> No active infrastructure packages.
+                            </div>
+                        `;
+                    } else {
+                        const colorMap = {
+                            'Cloud Hosting': '#4F46E5',
+                            'Security Solutions': '#06B6D4',
+                            'Analytics Suite': '#10B981',
+                            'Support Package': '#F59E0B',
+                            'Database Management': '#EC4899',
+                            'API Integration': '#8B5CF6',
+                            'Database Management Suite': '#EC4899',
+                            'Security Solutions Pack': '#06B6D4',
+                            'Cloud Hosting - Production': '#4F46E5'
+                        };
+                        
+                        breakdownList.innerHTML = client.services.map(serv => {
+                            const cost = serviceCosts[serv] || 0;
+                            const dotColor = colorMap[serv] || '#64748B';
+                            return `
+                                <div class="health-row" style="padding: 12px 16px; margin: 0; display: flex; justify-content: space-between; align-items: center; border-radius: var(--radius-md);">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 10px; height: 10px; border-radius: 50%; background: ${dotColor}; box-shadow: 0 0 8px ${dotColor};"></div>
+                                        <span style="font-weight: 600; font-size: 0.9rem; color: var(--text);">${serv}</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <span class="health-status health-ok" style="padding: 2px 10px; font-size: 0.7rem;"><i class="fa-solid fa-circle"></i> Active</span>
+                                        <span style="font-weight: 700; font-size: 0.95rem; color: var(--text); font-family: 'Outfit', sans-serif;">$${cost}/mo</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            }
+        }
+
+        // View single support ticket diagnostic log
+        function viewTicketMessage(id) {
+            const tickets = getTickets();
+            const t = tickets.find(item => item.id === id);
+            if (t) {
+                alert(`Support Ticket ID: ${t.id}\nSubject: ${t.subject}\nStatus: ${t.status}\nPriority: ${t.priority}\nCreated: ${t.created}\n\nDescription:\n${t.description}`);
+            }
+        }
+
+        // Print Invoice trigger
+        function printInvoice(id) {
+            const invoices = getInvoices();
+            const inv = invoices.find(i => i.id === id);
+            if (inv) {
+                const printWindow = window.open('', '', 'height=500,width=800');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Invoice - ${inv.id}</title>
+                            <style>
+                                body { font-family: sans-serif; padding: 40px; color: #1e293b; }
+                                .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+                                .details { margin-bottom: 40px; line-height: 1.6; }
+                                .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                                .table th, .table td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+                                .total { text-align: right; font-size: 1.25rem; font-weight: bold; margin-top: 40px; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <div>
+                                    <h2 style="color:#14b8a6; margin:0;">IT SOLUTIONS</h2>
+                                    <p style="margin:4px 0 0 0; font-size:0.9rem; color:#64748b;">Enterprise Infrastructure Managed Portals</p>
+                                </div>
+                                <div style="text-align:right;">
+                                    <h3 style="margin:0;">INVOICE STATEMENT</h3>
+                                    <p style="margin:4px 0 0 0; font-weight:bold; color:#14b8a6;">${inv.id}</p>
+                                </div>
+                            </div>
+                            <div class="details">
+                                <strong>Billed To:</strong><br>
+                                Representative of ${inv.clientName}<br>
+                                Date: ${inv.date}<br>
+                                Status: <strong>${inv.status}</strong>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Contract Period</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Monthly Enterprise Support Infrastructure & Managed SLA License</td>
+                                        <td>1 Month</td>
+                                        <td>${formatCurrency(inv.amount)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="total">
+                                Total Bill: ${formatCurrency(inv.amount)}
+                            </div>
+                        <\/body>
+                    <\/html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+            }
+        }
+
+        // Available Services Shop Ordering handler
+        function requestService(serviceName, cost) {
+            const clients = getClients();
+            const index = clients.findIndex(c => c.email.toLowerCase() === currentClientData.email.toLowerCase());
+            
+            if (index !== -1) {
+                // Check if client already has this service running
+                if (clients[index].services.includes(serviceName)) {
+                    showToast(`You already have active deployment of ${serviceName}!`, "warning");
+                    return;
+                }
+
+                // Add service
+                clients[index].services.push(serviceName);
+                
+                // Add cost to total spent
+                clients[index].spent += cost;
+                
+                // Write back
+                saveClients(clients);
+
+                // Create a matching Invoice for this purchase!
+                const invoices = getInvoices();
+                const invId = `INV-2026-` + Math.floor(Math.random() * 900 + 100);
+                invoices.push({
+                    id: invId,
+                    clientName: currentClientData.company,
+                    amount: cost,
+                    date: new Date().toISOString().split('T')[0],
+                    status: "Pending" // Unpaid pending invoice for new purchase
+                });
+                saveInvoices(invoices);
+
+                showToast(`Ordered ${serviceName}! Unpaid statement ${invId} generated.`, "success");
+                
+                // Refresh
+                syncClientData();
+                loadClientDashboard();
+            }
+        }
+
+        // Support ticket submission
+        function submitCreateTicket(event) {
+            event.preventDefault();
+            const subject = document.getElementById('ticketSubject').value.trim();
+            const category = document.getElementById('ticketCategory').value;
+            const priority = document.getElementById('ticketPriority').value;
+            const description = document.getElementById('ticketDescription').value.trim();
+
+            const tickets = getTickets();
+            const nextNum = tickets.length > 0 ? Math.max(...tickets.map(t => parseInt(t.id.split('-')[1]))) + 1 : 101;
+            const ticketId = `TK-${nextNum}`;
+
+            const newTicket = {
+                id: ticketId,
+                clientName: currentClientData.name,
+                clientEmail: currentClientData.email,
+                subject: subject,
+                category: category,
+                priority: priority,
+                status: "Open",
+                created: new Date().toISOString().split('T')[0],
+                description: description
+            };
+
+            tickets.push(newTicket);
+            saveTickets(tickets);
+
+            showToast(`Support Ticket ${ticketId} created successfully!`, "success");
+            closeModal('ticketModal');
+            document.getElementById('createTicketForm').reset();
+            
+            // Refresh
+            loadClientDashboard();
+        }
+
+        // Profile updates submission
+        function submitProfileUpdate(event) {
+            event.preventDefault();
+            const name = document.getElementById('profileName').value.trim();
+            const company = document.getElementById('profileCompany').value.trim();
+            const phone = document.getElementById('profilePhone').value.trim();
+
+            const clients = getClients();
+            const index = clients.findIndex(c => c.email.toLowerCase() === currentClientData.email.toLowerCase());
+
+            if (index !== -1) {
+                // Update
+                clients[index].name = name;
+                clients[index].company = company;
+                clients[index].phone = phone;
+                saveClients(clients);
+
+                // Update session variables
+                sessionStorage.setItem('userName', name);
+                sessionStorage.setItem('userCompany', company);
+
+                showToast("Profile settings updated successfully!", "success");
+                
+                // Refresh UI labels
+                syncClientData();
+                loadClientDashboard();
+            }
+        }
+    </script>
+</body>
+</html>
