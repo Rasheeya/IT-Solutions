@@ -79,14 +79,23 @@
 
                 <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
 
-                    <!-- Demo Autofill shortcuts -->
-                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border); text-align: center;">
-                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; display: block; margin-bottom: 12px;">Demo Login Shortcuts</span>
-                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                        <button type="button" id="adminDemoBtn" class="btn btn-secondary btn-sm" onclick="autofill('admin@itsolutions.com', 'admin123', 'admin')" style="font-size: 0.75rem; padding: 6px 12px;">Admin Demo</button>
-                        <button type="button" id="clientDemoBtn" class="btn btn-secondary btn-sm" onclick="autofill('client@techcorp.com', 'client123', 'client')" style="font-size: 0.75rem; padding: 6px 12px;">Client Demo</button>
+                    <!-- Login As segmented control selector -->
+                    <div class="form-group" style="margin-bottom: 28px;">
+                        <label class="form-label" style="display: block; text-align: center; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-light);">Login As</label>
+                        <div class="segmented-control">
+                            <input type="radio" name="loginRole" id="roleClient" value="client" checked>
+                            <label for="roleClient" class="segmented-control-option-label">
+                                <i class="fa-solid fa-user"></i> Client
+                            </label>
+                            
+                            <input type="radio" name="loginRole" id="roleAdmin" value="admin">
+                            <label for="roleAdmin" class="segmented-control-option-label">
+                                <i class="fa-solid fa-user-shield"></i> Admin
+                            </label>
+                            
+                            <div class="segmented-control-slider"></div>
+                        </div>
                     </div>
-                </div>
 
                     <!-- Email field -->
                     <div class="form-group">
@@ -139,61 +148,6 @@
     <!-- Core Scripts -->
     <script src="script.js"></script>
     <script>
-        let selectedDemoRole = null; // Track selected role from shortcut click
-
-        // Autofill helper for reviewers
-        function autofill(email, password, role) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-            // Clear errors
-            document.getElementById('emailError').innerHTML = '';
-            document.getElementById('passwordError').innerHTML = '';
-            
-            selectedDemoRole = role;
-            updateShortcutStyles();
-            
-            showToast(`Selected ${role === 'admin' ? 'Admin' : 'Client'} mode and autofilled!`, "info");
-        }
-
-        // Toggle active button style
-        function updateShortcutStyles() {
-            const adminBtn = document.getElementById('adminDemoBtn');
-            const clientBtn = document.getElementById('clientDemoBtn');
-            
-            if (selectedDemoRole === 'admin') {
-                adminBtn.classList.remove('btn-secondary');
-                adminBtn.classList.add('btn-primary');
-                clientBtn.classList.remove('btn-primary');
-                clientBtn.classList.add('btn-secondary');
-            } else if (selectedDemoRole === 'client') {
-                clientBtn.classList.remove('btn-secondary');
-                clientBtn.classList.add('btn-primary');
-                adminBtn.classList.remove('btn-primary');
-                adminBtn.classList.add('btn-secondary');
-            } else {
-                adminBtn.classList.remove('btn-primary');
-                adminBtn.classList.add('btn-secondary');
-                clientBtn.classList.remove('btn-primary');
-                clientBtn.classList.add('btn-secondary');
-            }
-        }
-
-        // Add input event listener to sync styling when typing
-        document.addEventListener('DOMContentLoaded', () => {
-            const emailInput = document.getElementById('email');
-            if (emailInput) {
-                emailInput.addEventListener('input', (e) => {
-                    const emailValue = e.target.value.toLowerCase();
-                    if (emailValue.includes('admin')) {
-                        selectedDemoRole = 'admin';
-                    } else if (emailValue.includes('client')) {
-                        selectedDemoRole = 'client';
-                    }
-                    updateShortcutStyles();
-                });
-            }
-        });
-
         // Toggle password visibility eye icon
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
@@ -244,25 +198,41 @@
                 return;
             }
 
-            // Authentication checks: prioritize the active selected Demo Shortcut role,
-            // fall back to looking for "admin" in email, otherwise default to client.
-            const role = selectedDemoRole || (email.toLowerCase().includes('admin') ? 'admin' : 'client');
+            // Role is strictly determined by the selected segmented control option
+            const role = document.querySelector('input[name="loginRole"]:checked').value;
             
             // Set User profile details in session
             sessionStorage.setItem('userEmail', email);
             sessionStorage.setItem('userRole', role);
             
-            // Generate full name based on prefix
-            const username = email.split('@')[0];
-            const formattedName = username.charAt(0).toUpperCase() + username.slice(1).replace('.', ' ');
-            sessionStorage.setItem('userName', formattedName);
+            // Lookup user details in localStorage to resolve custom registered name if possible
+            let resolvedName = '';
+            let resolvedCompany = '';
             
-            showToast("Login successful! Redirecting...", "success");
+            if (role === 'client') {
+                const clients = JSON.parse(localStorage.getItem('it_clients')) || [];
+                const matchedClient = clients.find(c => c.email.toLowerCase() === email.toLowerCase());
+                if (matchedClient) {
+                    resolvedName = matchedClient.name;
+                    resolvedCompany = matchedClient.company;
+                    sessionStorage.setItem('userCompany', resolvedCompany);
+                }
+            } else {
+                const users = JSON.parse(localStorage.getItem('it_users')) || [];
+                const matchedAdmin = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.role === 'admin');
+                if (matchedAdmin) {
+                    resolvedName = matchedAdmin.fullname;
+                }
+            }
+
+            if (!resolvedName) {
+                // Generate fallback name based on email prefix
+                const username = email.split('@')[0];
+                resolvedName = username.charAt(0).toUpperCase() + username.slice(1).replace('.', ' ');
+            }
+            sessionStorage.setItem('userName', resolvedName);
             
-            // Transition and redirect
-            setTimeout(() => {
-                window.location.href = role === 'admin' ? 'admin.html' : 'client.html';
-            }, 1200);
+            window.location.href = role === 'admin' ? 'admin.html' : 'client.html';
         }
 
         function isValidEmail(email) {

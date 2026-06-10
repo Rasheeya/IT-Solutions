@@ -24,8 +24,10 @@
         <button class="mobile-menu-btn" id="menuToggle" aria-label="Open Sidebar">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <img src="./image/stackly_logo.webp" alt="Stackly" style="width: 50%; height: 50%; margin-right: 80px;">
-
+        <img src="./image/stackly_logo.webp" alt="Stackly" class="mobile-logo">
+        <button class="theme-toggle-btn" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
     </header>
 
     <!-- Dashboard Main Workspace -->
@@ -160,7 +162,7 @@
                 </div>
 
                 <!-- Two Column Layout -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div class="overview-split-row">
                     <!-- Recent Activity Feed -->
                     <div class="card">
                         <div class="card-header">
@@ -410,7 +412,7 @@
                     </div>
                 </div>
 
-                <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+                <div class="analytics-grid">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Monthly Revenue Stream</h3>
@@ -467,7 +469,7 @@
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-row-2col">
                             <div class="form-group">
                                 <label class="form-label" for="timeZone">Default Timezone</label>
                                 <div class="input-wrapper">

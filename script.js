@@ -169,8 +169,6 @@ function toggleTheme() {
             icon.className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
         }
     });
-
-    showToast(`${isDark ? "Dark" : "Light"} mode enabled!`, "info");
 }
 
 // ===== ANIMATE COUNTERS =====
@@ -347,10 +345,7 @@ function checkSession(allowedRole) {
 
 function handleLogout() {
     sessionStorage.clear();
-    showToast("Logged out successfully! Redirecting...", "info");
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1000);
+    window.location.href = "index.html";
 }
 
 // ===== EXPORT & PRINT UTILITIES =====

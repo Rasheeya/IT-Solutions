@@ -650,6 +650,94 @@ body.dark-mode .btn-secondary:hover {
   border: 1px solid var(--border);
 }
 
+/* Segmented Control for LoginAs & SignupAs */
+.segmented-control {
+  display: flex;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  position: relative;
+  margin-bottom: 24px;
+  user-select: none;
+}
+
+.segmented-control-option-label {
+  flex: 1;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  z-index: 2;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.segmented-control input[type="radio"] {
+  display: none;
+}
+
+.segmented-control input[type="radio"]:checked + .segmented-control-option-label {
+  color: #FFFFFF;
+}
+
+body.dark-mode .segmented-control input[type="radio"]:checked + .segmented-control-option-label {
+  color: #FFFFFF;
+}
+
+.segmented-control-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  border-radius: calc(var(--radius-md) - 2px);
+  z-index: 1;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.segmented-control input#roleAdmin:checked ~ .segmented-control-slider,
+.segmented-control input#signupAdmin:checked ~ .segmented-control-slider {
+  transform: translateX(100%);
+}
+
+/* Overview Split Rows for Dashboards */
+.overview-split-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* 2-column form rows */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Mobile Header Logo */
+.mobile-logo {
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+/* Analytics Tab Charts Grid */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
 /* ===== AUTHENTICATION LAYOUT (LOGIN/SIGNUP) ===== */
 .auth-container {
   display: flex;
@@ -1031,9 +1119,10 @@ body.dark-mode .btn-secondary:hover {
 /* ===== DASHBOARD CONTAINER LAYOUT ===== */
 .dashboard-container {
   display: flex;
-  min-height: calc(100vh - 70px);
+  height: 100vh;
   width: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 /* Interactive Sticky Sidebar */
@@ -1048,6 +1137,8 @@ body.dark-mode .btn-secondary:hover {
   flex-shrink: 0;
   transition: var(--transition);
   animation: fadeInLeft 0.5s ease;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .dashboard-sidebar > div:first-child {
@@ -1248,6 +1339,7 @@ body.dark-mode .btn-secondary:hover {
 .dashboard-content {
   flex: 1;
   padding: 32px;
+  height: 100%;
   overflow-y: auto;
   position: relative;
   transition: var(--transition);
@@ -2449,6 +2541,12 @@ body.dark-mode .btn-secondary:hover {
   .overview-split-side {
     grid-column: 1;
   }
+  
+  .overview-split-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
   .auth-left {
     display: none;
   }
@@ -2477,7 +2575,39 @@ body.dark-mode .btn-secondary:hover {
   /* Dashboard layout becomes vertical */
   .dashboard-container {
     flex-direction: column;
+    height: auto;
     min-height: calc(100vh - 60px);
+    overflow: visible;
+  }
+
+  .dashboard-content {
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Client Hero Responsive stacking */
+  .client-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+    gap: 20px;
+  }
+  
+  .client-hero-actions {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .client-hero-actions .btn {
+    flex: 1;
+    min-width: 140px;
+  }
+  
+  /* Cards padding compacting on mobile */
+  .card {
+    padding: 20px 16px;
+    margin-bottom: 16px;
   }
   
   /* Sidebar becomes off-canvas drawer */
@@ -2588,6 +2718,16 @@ body.dark-mode .btn-secondary:hover {
 
 /* Small Phones */
 @media (max-width: 480px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
   .auth-card {
     padding: 24px 16px;
     border-radius: var(--radius-md);
